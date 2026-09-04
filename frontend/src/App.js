@@ -11,7 +11,7 @@ function App() {
   }, []);
 
   const fetchStudents = async () => {
-    const response = await fetch('http://localhost:5000/api/students');
+    const response = await fetch('http://13.126.189.150:5000/api/students');
     const data = await response.json();
     setStudents(data);
   };
@@ -19,8 +19,8 @@ function App() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const url = editing 
-      ? `http://localhost:5000/api/students/${editing}`
-      : 'http://localhost:5000/api/students';
+      ? `http://13.126.189.150:5000/api/students/${editing}`
+      : 'http://13.126.189.150:5000/api/students';
     
     await fetch(url, {
       method: editing ? 'PUT' : 'POST',
