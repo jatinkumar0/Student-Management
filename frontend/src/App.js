@@ -260,7 +260,7 @@ function App() {
         </div>
         <div className="arch-pill">
           <span className="status-dot"></span>
-          ALB &bull; EC2 Cluster &bull; MySQL RDS
+          CLOUD COMPUTING WORKSHOP , GLA UNIVERSITY 
         </div>
       </div>
 
