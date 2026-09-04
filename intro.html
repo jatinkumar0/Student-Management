@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cloud Computing Workshop - 3-Tier AWS Architecture</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=Fira+Code:wght@500&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #090d16;
+      --card-bg: rgba(18, 24, 38, 0.75);
+      --border: rgba(255, 255, 255, 0.08);
+      --primary: #6366f1;
+      --accent: #38bdf8;
+      --text: #f8fafc;
+      --muted: #94a3b8;
+      --success: #10b981;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background-color: var(--bg);
+      background-image: 
+        radial-gradient(at 0% 0%, rgba(99, 102, 241, 0.18) 0, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(56, 189, 248, 0.12) 0, transparent 50%),
+        radial-gradient(at 50% 100%, rgba(16, 185, 129, 0.08) 0, transparent 50%);
+      font-family: 'Inter', sans-serif;
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 48px 20px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 1100px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    /* Header */
+    .header {
+      text-align: center;
+    }
+
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(99, 102, 241, 0.15);
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      color: #a5b4fc;
+      font-size: 0.85rem;
+      font-weight: 600;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      margin-bottom: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--success);
+      box-shadow: 0 0 10px var(--success);
+    }
+
+    h1 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 2.7rem;
+      font-weight: 700;
+      letter-spacing: -0.03em;
+      background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .subtitle {
+      color: var(--muted);
+      font-size: 1.05rem;
+      margin-top: 6px;
+    }
+
+    /* Section Headers */
+    .section-title {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.3rem;
+      color: #ffffff;
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* Concept & Why Cards */
+    .concept-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    @media (max-width: 768px) {
+      .concept-grid { grid-template-columns: 1fr; }
+    }
+
+    .highlight-card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+    }
+
+    .highlight-card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.15rem;
+      margin-bottom: 10px;
+      color: #e2e8f0;
+    }
+
+    .highlight-card p {
+      color: var(--muted);
+      font-size: 0.92rem;
+      line-height: 1.6;
+    }
+
+    .benefit-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .benefit-list li {
+      display: flex;
+      gap: 10px;
+      font-size: 0.9rem;
+      color: #cbd5e1;
+    }
+
+    .benefit-list li strong {
+      color: #fff;
+    }
+
+    /* Main Architecture Stack Grid */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 18px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 24px;
+      transition: all 0.25s ease;
+      position: relative;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(99, 102, 241, 0.4);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .tier-tag {
+      font-family: 'Fira Code', monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 10px;
+      display: inline-block;
+    }
+
+    .card h3 {
+      font-family: 'Space Grotesk', sans-serif;
+      font-size: 1.25rem;
+      margin-bottom: 8px;
+    }
+
+    .card p {
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.5;
+    }
+
+    .tech-pill {
+      display: inline-block;
+      margin-top: 14px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--border);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-family: 'Fira Code', monospace;
+      color: #e2e8f0;
+    }
+
+    /* Flow Chart / Route Bar */
+    .flow-bar {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 18px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .flow-step {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 0.95rem;
+    }
+
+    .step-num {
+      background: var(--primary);
+      width: 26px;
+      height: 26px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 50%;
+      font-weight: 700;
+      font-size: 0.8rem;
+    }
+
+    .arrow {
+      color: #64748b;
+      font-weight: bold;
+    }
+
+    /* Learning Objectives */
+    .learn-section {
+      background: var(--card-bg);
+      border: 1px solid var(--border);
+      border-radius: 18px;
+      padding: 28px;
+    }
+
+    .objectives-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+
+    .obj-item {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .obj-icon {
+      font-size: 1.15rem;
+      line-height: 1;
+      margin-top: 2px;
+    }
+
+    .obj-text strong {
+      display: block;
+      color: #f1f5f9;
+      font-size: 0.95rem;
+      margin-bottom: 3px;
+    }
+
+    .obj-text span {
+      color: var(--muted);
+      font-size: 0.85rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="badge">
+        <span class="pulse"></span> Live Demonstration Lab
+      </div>
+      <h1>Enterprise 3-Tier Web Architecture</h1>
+      <p class="subtitle">Deploying Resilient, Scalable & Isolated Cloud Systems on AWS</p>
+    </div>
+
+    <!-- What & Why Section -->
+    <div class="concept-grid">
+      <div class="highlight-card">
+        <h3>💡 What is a 3-Tier Architecture?</h3>
+        <p>
+          It is a software design pattern that divides an application into three distinct physical and logical layers:
+        </p>
+        <ul class="benefit-list">
+          <li><strong>1. Presentation Tier:</strong> User interface (UI) and client-side code.</li>
+          <li><strong>2. Application / Logic Tier:</strong> Business processing rules and API services.</li>
+          <li><strong>3. Data Tier:</strong> Dedicated database storing persistent relational records.</li>
+        </ul>
+      </div>
+
+      <div class="highlight-card">
+        <h3>🚀 Why is it the Industry Standard?</h3>
+        <ul class="benefit-list">
+          <li>
+            <span>🛡️</span>
+            <div><strong>Defense-in-Depth Security:</strong> The database has zero public exposure; users can never reach it directly.</div>
+          </li>
+          <li>
+            <span>📈</span>
+            <div><strong>Independent Scalability:</strong> Scale compute instances without touching database configurations.</div>
+          </li>
+          <li>
+            <span>🧩</span>
+            <div><strong>Maintainability:</strong> Teams can update frontend design or switch databases without breaking backend APIs.</div>
+          </li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Live AWS Stack Section -->
+    <div>
+      <div class="section-title">🏗️ The Live AWS Implementation</div>
+      <div class="grid">
+        <div class="card">
+          <span class="tier-tag">Traffic Director</span>
+          <h3>Application LB</h3>
+          <p>The only internet-facing gateway. Performs intelligent path-based routing.</p>
+          <span class="tech-pill">AWS ALB (Port 80)</span>
+        </div>
+
+        <div class="card">
+          <span class="tier-tag">Tier 1: Web UI</span>
+          <h3>Presentation</h3>
+          <p>Client dashboard downloaded into the user's browser to consume backend APIs.</p>
+          <span class="tech-pill">React.js (Port 3000)</span>
+        </div>
+
+        <div class="card">
+          <span class="tier-tag">Tier 2: Business Logic</span>
+          <h3>Application API</h3>
+          <p>Isolated Express server that processes requests and executes SQL logic.</p>
+          <span class="tech-pill">Node.js (Port 5000)</span>
+        </div>
+
+        <div class="card">
+          <span class="tier-tag">Tier 3: Persistence</span>
+          <h3>Data Layer</h3>
+          <p>Completely private database instance with automated snapshots & failover.</p>
+          <span class="tech-pill">MySQL RDS (Port 3306)</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Traffic Flow -->
+    <div class="flow-bar">
+      <div class="flow-step">
+        <span class="step-num">1</span>
+        <span>Browser (User)</span>
+      </div>
+      <span class="arrow">&rarr;</span>
+      <div class="flow-step">
+        <span class="step-num">2</span>
+        <span>ALB (Path: <code>/api/*</code> vs <code>/*</code>)</span>
+      </div>
+      <span class="arrow">&rarr;</span>
+      <div class="flow-step">
+        <span class="step-num">3</span>
+        <span>Target Groups (Private EC2)</span>
+      </div>
+      <span class="arrow">&rarr;</span>
+      <div class="flow-step">
+        <span class="step-num">4</span>
+        <span>MySQL RDS Storage</span>
+      </div>
+    </div>
+
+    <!-- Workshop Objectives -->
+    <div class="learn-section">
+      <div class="section-title" style="margin-bottom: 20px;">🎯 What We Are Learning Today</div>
+      <div class="objectives-grid">
+        <div class="obj-item">
+          <span class="obj-icon">🛡️</span>
+          <div class="obj-text">
+            <strong>VPC Isolation & Private Subnets</strong>
+            <span>Why production servers and databases must never have public IPv4 addresses assigned.</span>
+          </div>
+        </div>
+
+        <div class="obj-item">
+          <span class="obj-icon">🔀</span>
+          <div class="obj-text">
+            <strong>ALB Path-Based Routing</strong>
+            <span>Routing port 80 traffic to React (<code>/*</code>) and Express (<code>/api/*</code>) via target groups.</span>
+          </div>
+        </div>
+
+        <div class="obj-item">
+          <span class="obj-icon">🔒</span>
+          <div class="obj-text">
+            <strong>Security Group Chaining</strong>
+            <span>Restricting DB access strictly to the backend SG without opening ports to the web.</span>
+          </div>
+        </div>
+
+        <div class="obj-item">
+          <span class="obj-icon">⚡</span>
+          <div class="obj-text">
+            <strong>Stateless Compute Architecture</strong>
+            <span>Decoupling compute from data storage to allow effortless zero-downtime auto-scaling.</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>
