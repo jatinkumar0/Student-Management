@@ -7,9 +7,9 @@ app.use(cors());
 app.use(express.json());
 
 const db = mysql.createConnection({
-  host: 'gla-workshop.czww0sq4695r.ap-south-1.rds.amazonaws.com',
+  host: 'DB_URL',
   user: 'admin',
-  password: 'GLA123456',
+  password: 'pass',
   database: 'student_db'
 });
 
